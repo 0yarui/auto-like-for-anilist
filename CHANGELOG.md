@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.6.1
+- Global feed: posts already on screen are now liked first, so the hearts you see turn red (the API's newest posts are ahead of what the page loaded)
+
 ## 1.6.0
 - No more stopping after 150 posts: a run now keeps going through older posts until the feed ends, you press Stop or the like limit is reached (before, it quit after 3 pages in a row that were already liked)
 - Home feed follows the tab that is open on the page (Following or Global); the popup setting is only a fallback

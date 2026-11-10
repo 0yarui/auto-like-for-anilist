@@ -25,7 +25,7 @@
   const Q = {
     viewer: 'query{Viewer{id}}',
     user: 'query($name:String){User(name:$name){id name}}',
-    state: 'query($id:Int){Activity(id:$id){... on TextActivity{isLiked} ... on ListActivity{isLiked} ... on MessageActivity{isLiked}}}',
+    state: 'query($id:Int){Activity(id:$id){... on TextActivity{isLiked user{name}} ... on ListActivity{isLiked user{name}} ... on MessageActivity{isLiked messenger{name}}}}',
     profile: pageQuery(',$uid:Int', 'userId:$uid'),
     following: pageQuery('', 'isFollowing:true'),
     global: pageQuery('', 'isFollowing:false,hasRepliesOrTypeText:true'),
@@ -166,7 +166,6 @@
     }
   }
 
-  // paint the hearts red on screen
   // which tab of the home feed is open right now (null if it can't be told)
   function pageFeed() {
     const tabs = document.querySelectorAll('[class*="feed"] .link, [class*="feed"] a, [class*="feed"] button');
@@ -179,6 +178,18 @@
     return null;
   }
 
+  // ids of the posts currently on the page, in screen order
+  function visibleIds() {
+    const ids = [];
+    document.querySelectorAll(`${SEL.entry} a[href*="/activity/"]`).forEach((a) => {
+      const m = /\/activity\/(\d+)/.exec(a.getAttribute('href'));
+      const id = m && Number(m[1]);
+      if (id && !ids.includes(id)) ids.push(id);
+    });
+    return ids;
+  }
+
+  // paint the hearts red on screen
   function markLiked(id) {
     try {
       const re = new RegExp(`/activity/${id}(?:$|[/?#])`);
@@ -338,6 +349,53 @@
 
       let pageNo = 1;
       let verified = false;
+      const seen = new Set();
+
+      // like one post unless it is already liked or its author is blacklisted
+      const handle = async (a) => {
+        if (seen.has(a.id)) return;
+        seen.add(a.id);
+        stats.posts++;
+        if (a.isLiked) {
+          stats.already++;
+          return;
+        }
+        const owner = ((a.user && a.user.name) || (a.messenger && a.messenger.name) || '').toLowerCase();
+        if (owner && blacklist.has(owner)) {
+          stats.bl++;
+          return;
+        }
+
+        await gql(Q.like, { id: a.id }, token);
+        if (!verified) {
+          // make sure the first like really went through
+          const v = await gql(Q.state, { id: a.id }, token);
+          if (!(v && v.Activity && v.Activity.isLiked)) {
+            apiError = 'ToggleLike returned OK but the activity is still not liked';
+            abort('rApi', { msg: apiError });
+            return;
+          }
+          verified = true;
+        }
+        likedCount++;
+        markLiked(a.id);
+        updateButton();
+
+        if (s.maxLikes > 0 && likedCount >= s.maxLikes) {
+          abort('rLimit');
+          return;
+        }
+        await sleep(rand(minD, maxD));
+      };
+
+      // posts on screen first: a busy feed (Global) is far ahead of what the page loaded
+      if (query) {
+        for (const id of visibleIds()) {
+          if (stopFlag) break;
+          const d = await gql(Q.state, { id }, token);
+          if (d && d.Activity) await handle({ id, ...d.Activity });
+        }
+      }
 
       while (query && !stopFlag) {
         const d = await gql(query, { page: pageNo, ...vars }, token);
@@ -347,37 +405,7 @@
 
         for (const a of list) {
           if (stopFlag) break;
-          stats.posts++;
-          if (a.isLiked) {
-            stats.already++;
-            continue;
-          }
-          const owner = ((a.user && a.user.name) || (a.messenger && a.messenger.name) || '').toLowerCase();
-          if (owner && blacklist.has(owner)) {
-            stats.bl++;
-            continue;
-          }
-
-          await gql(Q.like, { id: a.id }, token);
-          if (!verified) {
-            // make sure the first like really went through
-            const v = await gql(Q.state, { id: a.id }, token);
-            if (!(v && v.Activity && v.Activity.isLiked)) {
-              apiError = 'ToggleLike returned OK but the activity is still not liked';
-              abort('rApi', { msg: apiError });
-              break;
-            }
-            verified = true;
-          }
-          likedCount++;
-          markLiked(a.id);
-          updateButton();
-
-          if (s.maxLikes > 0 && likedCount >= s.maxLikes) {
-            abort('rLimit');
-            break;
-          }
-          await sleep(rand(minD, maxD));
+          await handle(a);
         }
 
         if (stopFlag) break;
