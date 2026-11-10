@@ -18,7 +18,7 @@ Firefox extension that automatically likes activity-feed posts on [AniList](http
 
 ## Install
 
-- **Firefox Add-ons:** _link coming once published_
+- **Firefox Add-ons (recommended):** [Install from addons.mozilla.org](https://addons.mozilla.org/firefox/addon/auto-like-for-anilist/)
 - **From source (temporary, removed when Firefox closes):**
   1. Download this repository.
   2. Open `about:debugging#/runtime/this-firefox`.
