@@ -2,7 +2,7 @@
 
 _Last updated: 2026-11-04_
 
-AniList Auto-Like does not collect, track or sell personal data. It has no analytics and no server of its own.
+Auto-Like for AniList does not collect, track or sell personal data. It has no analytics and no server of its own.
 
 ## What is stored (locally, in your browser only)
 
@@ -30,4 +30,4 @@ The extension never asks for or stores your Client Secret.
 
 ## Contact
 
-Open an issue at https://github.com/0yarui/anilist-auto-like/issues
+Open an issue at https://github.com/0yarui/auto-like-for-anilist/issues

@@ -3,13 +3,13 @@
 Paste each block into the matching field on addons.mozilla.org.
 
 ## Name
-AniList Auto-Like
+Auto-Like for AniList
 
 ## Summary (max 250 characters)
 Automatically likes activity-feed posts on AniList (home and profiles) at an adjustable pace. Speed presets, user blacklist, goes through older posts by itself, 10 interface languages. Unofficial; needs a free AniList API client.
 
 ## Description
-AniList Auto-Like likes the activity-feed posts on your AniList home feed and on user profiles, so you can support your friends without clicking every heart.
+Auto-Like for AniList likes the activity-feed posts on your AniList home feed and on user profiles, so you can support your friends without clicking every heart.
 
 FEATURES
 • "Like" button inside the AniList navigation bar, plus a toolbar popup with a step-by-step account setup
@@ -43,7 +43,7 @@ SECURITY AND PRIVACY
 Everything is stored locally in your browser: your Client ID, the access token AniList issues (it can act as your account, so keep your computer secure), your username and your settings. The only servers contacted are AniList's (anilist.co and graphql.anilist.co). No analytics, nothing sent to the developer. "Disconnect account" deletes the token, and you can also revoke it in your AniList settings. The source code is not minified.
 
 SUPPORT AND SOURCE CODE
-https://github.com/0yarui/anilist-auto-like
+https://github.com/0yarui/auto-like-for-anilist
 Licensed under GPL-3.0-or-later.
 
 ## Categories (up to 3)
@@ -53,10 +53,10 @@ Social & Communication, Games & Entertainment
 anilist, anime, manga, social, likes
 
 ## Support site
-https://github.com/0yarui/anilist-auto-like
+https://github.com/0yarui/auto-like-for-anilist
 
 ## Privacy policy URL
-https://github.com/0yarui/anilist-auto-like/blob/main/PRIVACY.md
+https://github.com/0yarui/auto-like-for-anilist/blob/main/PRIVACY.md
 
 ## Notes to reviewers
 The extension needs an AniList account and a personal API client to test:
@@ -64,7 +64,7 @@ The extension needs an AniList account and a personal API client to test:
 2. Set its Redirect URL to the value shown in the extension popup.
 3. Enter the Client ID in the popup and click Connect (OAuth implicit grant through browser.identity.launchWebAuthFlow). The token is stored in storage.local.
 4. Open https://anilist.co/home and click the "Like" button in the navigation bar, or "Like Posts" in the popup.
-Permissions: "storage" (settings and token), "identity" (login window), host permissions graphql.anilist.co (API calls) and anilist.co (content script, and reading the active tab URL from the popup to ask the user to open or refresh an AniList page). There is no build step: the uploaded zip contains the source files exactly as they are in the repository (https://github.com/0yarui/anilist-auto-like, folder extension/), nothing is minified, obfuscated or downloaded at runtime. A free AniList account is enough to test. The Redirect URL shown in the popup is derived from the add-on ID (anilist-autolike@0yarui).
+Permissions: "storage" (settings and token), "identity" (login window), host permissions graphql.anilist.co (API calls) and anilist.co (content script, and reading the active tab URL from the popup to ask the user to open or refresh an AniList page). There is no build step: the uploaded zip contains the source files exactly as they are in the repository (https://github.com/0yarui/auto-like-for-anilist, folder extension/), nothing is minified, obfuscated or downloaded at runtime. A free AniList account is enough to test. The Redirect URL shown in the popup is derived from the add-on ID (anilist-autolike@0yarui).
 
 ## Data declaration
 The manifest declares data_collection_permissions required ["authenticationInfo"]: the extension keeps an AniList access token in storage.local and sends it only to AniList's own API (graphql.anilist.co). Nothing goes to the developer or to any other server. Add-on ID: anilist-autolike@0yarui (AMO checks that it is unique on first upload; if it is taken, change it in manifest.json).

@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.6.0
+- No more stopping after 150 posts: a run now keeps going through older posts until the feed ends, you press Stop or the like limit is reached (before, it quit after 3 pages in a row that were already liked)
+- Home feed follows the tab that is open on the page (Following or Global); the popup setting is only a fallback
+- Links updated to the renamed repository, github.com/0yarui/auto-like-for-anilist
+
+## 1.5.9
+- Renamed to "Auto-Like for AniList" to follow the AniList API naming guidelines (a name that includes "AniList" must say it is unofficial, for example "for AniList")
+
 ## 1.5.8
 - Removed the gecko_android key (it made addons.mozilla.org mark Firefox for Android as compatible and lock the checkbox); the minimum Firefox version is now 142, which supports the data collection declaration
 

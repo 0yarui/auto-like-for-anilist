@@ -1,6 +1,6 @@
-<p align="center"><img src="store/icon-512.png" width="96" alt="AniList Auto-Like icon"></p>
+<p align="center"><img src="store/icon-512.png" width="96" alt="Auto-Like for AniList icon"></p>
 
-# AniList Auto-Like
+# Auto-Like for AniList
 
 Firefox extension that automatically likes activity-feed posts on [AniList](https://anilist.co), on your **home feed** and on **user profiles**, at an adjustable pace.
 
@@ -87,7 +87,7 @@ Everything stays in your browser. See [PRIVACY.md](PRIVACY.md).
 
 ## Reporting issues
 
-Use [GitHub Issues](https://github.com/0yarui/anilist-auto-like/issues/new/choose). Include your extension version, Firefox version and the debug text if a panel appeared. **Never post your access token or Client Secret.**
+Use [GitHub Issues](https://github.com/0yarui/auto-like-for-anilist/issues/new/choose). Include your extension version, Firefox version and the debug text if a panel appeared. **Never post your access token or Client Secret.**
 
 ## Development
 

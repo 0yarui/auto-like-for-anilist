@@ -2,7 +2,7 @@
 const api = typeof browser !== 'undefined' ? browser : chrome;
 
 // footer buttons are hidden if this is empty
-const REPO_URL = 'https://github.com/0yarui/anilist-auto-like';
+const REPO_URL = 'https://github.com/0yarui/auto-like-for-anilist';
 
 const DEFAULTS = {
   minDelay: 1500,

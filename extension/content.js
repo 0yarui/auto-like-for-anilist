@@ -18,7 +18,6 @@
   const API_URL = 'https://graphql.anilist.co';
   const PAGE_SIZE = 50;
   const TURBO_CAP = 85; // Turbo starts here and drops to the normal cap after the first 429
-  const CAUGHT_UP_PAGES = 3; // give up after this many pages in a row with nothing new
   const ACT =
     '... on TextActivity{id isLiked user{name}} ... on ListActivity{id isLiked user{name}} ... on MessageActivity{id isLiked messenger{name}}';
   const pageQuery = (vars, args) =>
@@ -79,7 +78,7 @@
   }
   const waitLeft = () => (waitUntil > Date.now() ? Math.ceil((waitUntil - Date.now()) / 1000) : 0);
   const rand = (a, b) => a + Math.random() * (b - a);
-  const log = (...a) => console.log('[AniList Auto-Like]', ...a);
+  const log = (...a) => console.log('[Auto-Like for AniList]', ...a);
 
   async function getSettings() {
     const s = await api.storage.local.get(DEFAULTS);
@@ -168,6 +167,18 @@
   }
 
   // paint the hearts red on screen
+  // which tab of the home feed is open right now (null if it can't be told)
+  function pageFeed() {
+    const tabs = document.querySelectorAll('[class*="feed"] .link, [class*="feed"] a, [class*="feed"] button');
+    for (const el of tabs) {
+      if (!/active/i.test(el.className)) continue;
+      const txt = el.textContent.trim().toLowerCase();
+      if (txt === 'global') return 'global';
+      if (txt === 'following') return 'following';
+    }
+    return null;
+  }
+
   function markLiked(id) {
     try {
       const re = new RegExp(`/activity/${id}(?:$|[/?#])`);
@@ -243,7 +254,7 @@
     const b = document.createElement('button');
     b.id = 'alk-btn';
     b.type = 'button';
-    b.title = 'AniList Auto-Like';
+    b.title = 'Auto-Like for AniList';
     b.innerHTML =
       '<svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="currentColor" d="M12 21S3 15.2 3 8.9C3 6 5.2 4 7.8 4c1.8 0 3.3.9 4.2 2.4C12.9 4.9 14.4 4 16.2 4 18.8 4 21 6 21 8.9 21 15.2 12 21 12 21z"/></svg><span></span>';
     b.addEventListener('click', () => (running ? stop() : run()));
@@ -320,12 +331,12 @@
             abort('rApi', { msg: apiError });
           }
         } else {
-          query = s.homeFeed === 'global' ? Q.global : Q.following;
+          // follow whichever tab is open on the page, the popup setting is only a fallback
+          query = (pageFeed() || s.homeFeed) === 'global' ? Q.global : Q.following;
         }
       }
 
       let pageNo = 1;
-      let caught = 0;
       let verified = false;
 
       while (query && !stopFlag) {
@@ -333,7 +344,6 @@
         const P = d && d.Page;
         const list = ((P && P.activities) || []).filter((a) => a && typeof a.id === 'number');
         stats.pages++;
-        let needed = 0;
 
         for (const a of list) {
           if (stopFlag) break;
@@ -347,7 +357,6 @@
             stats.bl++;
             continue;
           }
-          needed++;
 
           await gql(Q.like, { id: a.id }, token);
           if (!verified) {
@@ -372,11 +381,6 @@
         }
 
         if (stopFlag) break;
-        caught = needed === 0 ? caught + 1 : 0;
-        if (caught >= CAUGHT_UP_PAGES) {
-          reasonKey = 'rCaughtUp';
-          break;
-        }
         if (!s.autoScroll) {
           reasonKey = 'rDone';
           break;
@@ -397,7 +401,7 @@
 
       if (reasonKey === 'rAuth' || reasonKey === 'rApi' || (stats.posts === 0 && reasonKey !== 'rStopped')) {
         const report = [
-          `AniList Auto-Like v${api.runtime.getManifest().version} debug`,
+          `Auto-Like for AniList v${api.runtime.getManifest().version} debug`,
           `page: ${location.pathname} (${target.kind})`,
           `ua: ${navigator.userAgent}`,
           `result: ${reasonKey} | stats: ${JSON.stringify(stats)}`,
